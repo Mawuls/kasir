@@ -127,5 +127,6 @@
         <div>Total Diskon: Rp {{ number_format($totalDiskon,0,",",".") }}</div>
         <div class="mt-2">TOTAL BAYAR: Rp {{ number_format($totalKeseluruhan,0,",",".") }}</div>
     </div>
+
 </body>
 </html>

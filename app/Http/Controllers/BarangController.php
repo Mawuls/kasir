@@ -55,7 +55,18 @@ class BarangController extends Controller
 
     public function destroy($id)
     {
-        Barang::destroy($id);
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
+       
+    $barang = Barang::findOrFail($id);
+
+    // Check if any transaksi exists that references this barang
+    if ($barang->transaksis()->exists()) {
+        return back()->with('error', 'Tidak bisa menghapus barang karena masih memiliki transaksi.');
+    }
+
+    $barang->delete();
+
+    return back()->with('success', 'Barang berhasil dihapus.');
+
+
     }
 }

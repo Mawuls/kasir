@@ -15,7 +15,7 @@ return new class extends Migration
                 $table->id();
                 $table->string('nama_barang');
                 $table->integer('harga');
-                $table->integer('diskon_saat_ini')->default(0); // diskon per item (bisa 0)
+                $table->integer('diskon_saat_ini')->default(0);
                 $table->integer('stock');
                 $table->timestamps();
             });
