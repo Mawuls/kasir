@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barangs', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_barang');
-            $table->decimal('harga', 12, 2);
-            $table->bigInteger('stock')->unsigned();
-            $table->decimal('diskon_saat_ini', 12, 2);
-            $table->timestamps();
-        });
+                Schema::create('barangs', function (Blueprint $table) {
+                $table->id();
+                $table->string('nama_barang');
+                $table->integer('harga');
+                $table->integer('diskon_saat_ini')->default(0); // diskon per item (bisa 0)
+                $table->integer('stock');
+                $table->timestamps();
+            });
     }
 
     /**

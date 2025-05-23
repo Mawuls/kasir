@@ -19,7 +19,7 @@
 <body class="min-h-screen text-gray-800">
     <nav class="bg-amber-100 shadow p-4 mb-6">
         <div class="container mx-auto flex justify-between">
-           <h1 class="text-xl font-bold text-amber-900">🌱 Toko Tanduran e lek ajam</h1>
+           <h1 class="text-xl font-bold text-amber-900">TOKO SEMBAKO MAJI</h1>
             <div class="space-x-4">
                 <a href="{{ route('barang.index') }}" class="text-amber-800 hover:underline">Barang</a>
                 <a href="{{ route('transaksi.index') }}" class="text-amber-800 hover:underline">Transaksi</a>

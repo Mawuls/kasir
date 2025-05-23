@@ -1,40 +1,34 @@
 @extends('layouts.app')
 
+@section('title', isset($barang) ? 'Edit Barang' : 'Tambah Barang')
+
 @section('content')
-<div class="container mt-4">
-    <h1 class="text-2xl font-semibold text-green-800 mb-4">Tambah Barang</h1>
+<form action="{{ isset($barang) ? route('barang.update', $barang->id) : route('barang.store') }}" method="POST" class="space-y-4">
+    @csrf
+    @if(isset($barang))
+        @method('PUT')
+    @endif
 
-        <form action="{{ route('barang.store') }}" method="POST">
-            @csrf
-
-            <div class="mb-4">
-                <label for="nama_barang" class="block text-sm font-medium text-green-800 mb-1">Nama Barang</label>
-                <input type="text" name="nama_barang" id="nama_barang"
-                    class="w-full border border-green-500 rounded px-3 py-2 focus:outline-none focus:ring focus:ring-green-300"
-                    required>
-            </div>
-
-            <div class="mb-4">
-                <label for="harga" class="block text-sm font-medium text-green-800 mb-1">Harga</label>
-                <input type="number" step="0.01" name="harga" id="harga"
-                    class="w-full border border-green-500 rounded px-3 py-2 focus:outline-none" required>
-            </div>
-
-            <div class="mb-4">
-                <label for="diskon" class="block text-sm font-medium text-green-800 mb-1">Diskon</label>
-                <input type="number" name="diskon_saat_ini" required
-                    class="w-full border border-green-500 rounded px-3 py-2 focus:outline-none" required>
-            </div>
-
-            <div class="mb-4">
-                <label for="stock" class="block text-sm font-medium text-green-800 mb-1">Stock</label>
-                <input type="number" name="stock" id="stock"
-                    class="w-full border border-green-500 rounded px-3 py-2 focus:outline-none" required>
-            </div>
-
-            <button type="submit"
-                class="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition">Simpan</button>
-        </form>
+    <div>
+        <label>Nama Barang</label>
+        <input type="text" name="nama_barang" class="w-full p-2 border rounded" value="{{ old('nama_barang', $barang->nama_barang ?? '') }}" required>
     </div>
-</div>
+
+    <div>
+        <label>Harga</label>
+        <input type="number" name="harga" class="w-full p-2 border rounded" value="{{ old('harga', $barang->harga ?? '') }}" required>
+    </div>
+
+    <div>
+        <label>Diskon Saat Ini</label>
+        <input type="number" name="diskon_saat_ini" class="w-full p-2 border rounded" value="{{ old('diskon_saat_ini', $barang->diskon_saat_ini ?? 0) }}" required>
+    </div>
+
+    <div>
+        <label>Stock</label>
+        <input type="number" name="stock" class="w-full p-2 border rounded" value="{{ old('stock', $barang->stock ?? '') }}" required>
+    </div>
+
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Simpan</button>
+</form>
 @endsection

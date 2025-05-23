@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaksis', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_barang')->constrained('barangs')->onDelete('cascade');
-            $table->string('harga_asli');
-            $table->foreignId('nominal_diskon')->constrained('barangs')->onDelete('cascade');
-            $table->string('harga_diskon');
-            $table->string('total_pembelian');
-            $table->string('keuntungan');
-            $table->date('tanggal_pembelian');
-            $table->timestamps();
-        });
+                    Schema::create('transaksis', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('id_barang')->constrained('barangs')->onDelete('cascade');
+                $table->integer('jumlah');
+                $table->integer('harga_satuan');
+                $table->integer('diskon_saat_ini')->default(0);
+                $table->integer('harga_setelah_diskon');
+                $table->integer('total_pembelian');
+                $table->dateTime('tanggal_pembelian');
+                $table->timestamps();
+            });
     }
 
     /**

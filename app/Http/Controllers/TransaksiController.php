@@ -5,84 +5,70 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
 use App\Models\Barang;
+use Illuminate\Support\Facades\Date;
 
 class TransaksiController extends Controller
 {
     public function index()
-            {
-            $transaksis = Transaksi::all();
-            return view('transaksi.index', compact('transaksis'));
-            }
-        
-            public function create()
-            {
-               
-                $barangs = Barang::all();
-                return view('transaksi.create', compact('barangs'));
-            }
-    
-            public function store(Request $request)
-            {
-            $request->validate([
-                'id_barang' => 'required|exists:barangs,id',
-                'harga_asli' => 'required|string',
-                'nominal_diskon' => 'required|exists:barangs,id',
-                'harga_diskon' => 'required|string',
-                'total_pembelian' => 'required|string',
-                'keuntungan' => 'required|string',
-                'tanggal_pembelian' => 'required|date',
-            ]);
-        
-            $barangs = Barang::find($request->id_barang);
+    {
+        $transaksis = Transaksi::with('barang')->get();
+        return view('transaksi.index', compact('transaksis'));
+    }
 
-            Transaksi::create([
-                'id_barang' => $request->id_barang,
-                'nama_barang' => $barangs->nama_barang,
-                'harga' => $barangs->harga,
-                'stock' => $barangs->stock,
-                'harga_asli' => $request->harga_asli,
-                'nominal_diskon' => $request->nominal_diskon,
-                'diskon_saat_ini' => $request->diskon_saat_ini,
-                'harga_diskon' => $request->harga_diskon,
-                'total_pembelian' => $request->total_pembelian,
-                'keuntungan' => $request->keuntungan,
-                'tanggal_pembelian' => $request->tanggal_pembelian,
-            ]);
+    public function create()
+    {
+        $barangs = Barang::all();
+        return view('transaksi.create', compact('barangs'));
+    }
 
-           
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id_barang' => 'required|exists:barangs,id',
+            'jumlah' => 'required|integer|min:1',
+        ]);
+
+        $barang = Barang::findOrFail($request->id_barang);
+
         
-            return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan');
+
+
+
+        if ($barang->stock < $request->jumlah) {
+            return back()->withErrors(['jumlah' => 'Stock barang tidak mencukupi']);
         }
-        
-        
-            public function edit($id)
-            {
-            $transaksis = Transaksi::findOrFail($id);
-            return view('transaksi.edit', compact('transaksis'));
-            }
-        
-            public function update(Request $request, $id)
-            {
-            $request->validate([
-                'id_barang' => 'required|unique:transaksis,kode,'. $id,
-                'harga_asli' => 'required',
-                'nominal_diskon' => 'required',
-                'harga_diskon' => 'required',
-                'total_pembelian' => 'required',
-                'keuntungan' => 'required',
-                'tanggal_pembelian' => 'required|date',
-            ]);
-        
-        
-            $transaksis = Transaksi::findOrFail($id);
-            $transaksis->update($request->all());
-            return redirect()->route('transaksi.index')->with('success', 'Data Transaksi berhasil diperbarui');
-            }
-        
-            public function destroy($id)
-            {
-             Transaksi::destroy($id);
-            return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus');
-            }
-        
+
+        $hargaSatuan = $barang->harga;
+        $diskonSaatIni = $barang->diskon_saat_ini;
+        $hargaSetelahDiskon = $hargaSatuan - ($hargaSatuan * $diskonSaatIni / 100);
+        $totalPembelian = $hargaSetelahDiskon * $request->jumlah;
+
+        $barang->stock -= $request->jumlah;
+        $barang->save();
+
+        Transaksi::create([
+            'id_barang' => $barang->id,
+            'jumlah' => $request->jumlah,
+            'harga_satuan' => $hargaSatuan,
+            'diskon_saat_ini' => $diskonSaatIni,
+            'harga_setelah_diskon' => $hargaSetelahDiskon,
+            'total_pembelian' => $totalPembelian,
+            'tanggal_pembelian' => Date::now(),
+        ]);
+
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan');
+    }
+
+    public function show($id)
+    {
+        $transaksis = Transaksi::with('barang')->findOrFail($id);
+        return view('transaksi.show', compact('transaksis'));
+    }
+
+    public function destroy($id)
+    {
+        Transaksi::destroy($id);
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus');
+    }
 }

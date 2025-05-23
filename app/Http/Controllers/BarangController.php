@@ -7,61 +7,55 @@ use Illuminate\Http\Request;
 
 class BarangController extends Controller
 {
+    public function index()
+    {
+        $barangs = Barang::all();
+        return view('barang.index', compact('barangs'));
+    }
 
-  public function index()
-  {
-    $barangs = Barang::all();
-    return view('barang.index', compact('barangs'));
-  }
+    public function create()
+    {
+        return view('barang.create');
+    }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama_barang' => 'required|string',
+            'harga' => 'required|integer|min:0',
+            'diskon_saat_ini' => 'required|integer|min:0',
+            'stock' => 'required|integer|min:0',
+        ]);
 
-  public function create()
-  {
-    return view('barang.create');
-  }
+        Barang::create($request->all());
 
-  public function store(Request $request)
-  {
-    $request->validate([
-      'nama_barang' => 'required',
-      'harga' => 'required',
-      'stock' => 'required',
-      'diskon_saat_ini'=>'required'
-    ]);
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan');
+    }
 
+    public function edit($id)
+    {
+        $barang = Barang::findOrFail($id);
+        return view('barang.edit', compact('barang'));
+    }
 
-    Barang::create($request->all());
-    return redirect()->route('barang.index')->with('success', 'barang berhasil ditambahkan');
-  }
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_barang' => 'required|string',
+            'harga' => 'required|integer|min:0',
+            'diskon_saat_ini' => 'required|integer|min:0',
+            'stock' => 'required|integer|min:0',
+        ]);
 
+        $barang = Barang::findOrFail($id);
+        $barang->update($request->all());
 
-  public function edit($id)
-  {
-    $barangs = Barang::findOrFail($id);
-    return view('barang.edit', compact('barangs'));
-  }
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil diperbarui');
+    }
 
-
-  public function update(Request $request, $id)
-  {
-    $request->validate([
-      'nama_barang' => 'required',
-      'harga' => 'required',
-      'stock' => 'required',
-      'diskon_saat_ini'=>'required'
-    ]);
-
-
-    $barangs = Barang::findOrFail($id);
-    $barangs->update($request->all());
-    return redirect()->route('barang.index')->with('success', 'Data berhasil diperbarui');
-  }
-
-
- public function destroy($id)
-  {
-    Barang::destroy($id);
-    return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
-  }
-
+    public function destroy($id)
+    {
+        Barang::destroy($id);
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
+    }
 }
